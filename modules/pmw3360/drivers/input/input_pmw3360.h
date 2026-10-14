@@ -82,7 +82,6 @@ struct pmw3360_data {
     uint16_t cpi;
     bool motion_burst_active;
     bool polling_mode;
-    uint32_t last_poll_cycles;
 #if defined(CONFIG_INPUT_PIXART_PMW3360_USE_OWN_THREAD)
     struct k_work_q driver_work_queue;
 #endif

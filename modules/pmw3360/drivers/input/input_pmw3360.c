@@ -229,6 +229,7 @@ static void pmw3360_read_motion_report(const struct device *dev) {
 }
 
 static void pmw3360_work_callback(struct k_work *work) {
+    const uint32_t start_cycles = k_cycle_get_32();
     struct k_work_delayable *delayed_work = k_work_delayable_from_work(work);
     struct pmw3360_data *data = CONTAINER_OF(delayed_work, struct pmw3360_data, motion_work);
     const struct device *dev = data->dev;
@@ -238,10 +239,9 @@ static void pmw3360_work_callback(struct k_work *work) {
         const struct pmw3360_config *config = dev->config;
         struct k_work_delayable *dwork = &data->motion_work;
         uint32_t current_cycles = k_cycle_get_32();
-        uint32_t cycles_diff = current_cycles - data->last_poll_cycles;
+        uint32_t cycles_diff = current_cycles - start_cycles;
         uint32_t delay = config->polling_interval - CLAMP(k_cyc_to_us_floor32(cycles_diff), 0, config->polling_interval);
 
-        data->last_poll_cycles = current_cycles;
 #if defined(CONFIG_INPUT_PIXART_PMW3360_USE_OWN_THREAD)
         k_work_reschedule_for_queue(&data->driver_work_queue, dwork, K_USEC(delay));
 #else
@@ -351,7 +351,6 @@ static void pmw3360_async_init(struct k_work *work) {
 
     if (data->polling_mode) {
         struct k_work_delayable *dwork = &data->motion_work;
-        data->last_poll_cycles = k_cycle_get_32();
 #if defined(CONFIG_INPUT_PIXART_PMW3360_USE_OWN_THREAD)
         k_work_reschedule_for_queue(&data->driver_work_queue, dwork, K_USEC(config->polling_interval));
 #else
