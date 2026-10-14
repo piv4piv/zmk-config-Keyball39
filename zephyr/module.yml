@@ -1,0 +1,6 @@
+name: keyball39-stock-pmw3360
+build:
+  cmake: modules/pmw3360
+  kconfig: modules/pmw3360/Kconfig
+  settings:
+    dts_root: modules/pmw3360

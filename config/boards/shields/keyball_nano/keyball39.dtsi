@@ -3,7 +3,6 @@
 
 / {
     chosen {
-        zephyr,display = &oled;
 	zmk,physical-layout = &keyball_physical_layout;
     };
 
@@ -102,7 +101,7 @@
 };
 
 &i2c0 {
-    status = "okay";
+    status = "disabled";
     compatible = "nordic,nrf-twi";
     pinctrl-0 = <&i2c0_default>;
     pinctrl-1 = <&i2c0_sleep>;

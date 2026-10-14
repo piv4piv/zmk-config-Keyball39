@@ -5,6 +5,7 @@
  */
  
 #include "keyball39.dtsi"
+#include <input/processors.dtsi>
 
 &default_transform {
     col-offset = <6>;
@@ -26,7 +27,7 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
                 <NRF_PSEL(SPIM_MOSI, 0, 10)>,
-                <NRF_PSEL(SPIM_MISO, 0, 10)>;
+                <NRF_PSEL(SPIM_MISO, 1, 11)>;
         };
     };
 
@@ -34,7 +35,7 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
                 <NRF_PSEL(SPIM_MOSI, 0, 10)>,
-                <NRF_PSEL(SPIM_MISO, 0, 10)>;
+                <NRF_PSEL(SPIM_MISO, 1, 11)>;
             low-power-enable;
         };
     };
@@ -46,17 +47,16 @@
     pinctrl-0 = <&spi1_default>;
     pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
-    cs-gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
+    cs-gpios = <&pro_micro 10 GPIO_ACTIVE_LOW>;
 
     trackball: trackball@0 {
         status = "okay";
-        compatible = "zmk,pmw3610";
+        compatible = "pixart,pmw3360";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        irq-gpios = <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        automouse-layer = <4>;
-	scroll-layers = <5>;
-	snipe-layers = <6>;
+        /* Stock PMW3360 board: four-wire SPI, no wired MOTION pin. */
+        polling-interval = <8000>;
+        cpi = <500>;
     };
 };
 
@@ -64,6 +64,13 @@
   trackball_listener {
     compatible = "zmk,input-listener";
     device = <&trackball>;
-
+    scroll {
+        layers = <5>;
+        input-processors = <&zip_xy_scaler 1 32 &zip_xy_to_scroll_mapper>;
+    };
+    snipe {
+        layers = <6>;
+        input-processors = <&zip_xy_scaler 1 3>;
+    };
   };
 };
