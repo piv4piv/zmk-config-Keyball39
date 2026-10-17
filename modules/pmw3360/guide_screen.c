@@ -24,11 +24,12 @@ static void update_guide(lv_timer_t *timer) {
     zmk_endpoint_instance_to_str(zmk_endpoints_selected(), endpoint, sizeof(endpoint));
     char text[180];
     if (layer_id == 7) {
-        snprintf(text, sizeof(text),
-                 "BT%d %s | %s\nTop:1 PC  2 Android\nTop:3/4/5 Other\nMid:1 USB  2 BLE", profile + 1, state, endpoint);
+        snprintf(text, sizeof(text), "1PC 2AND 3-5\nMID:1USB 2BT");
     } else {
-        snprintf(text, sizeof(text),
-                 "BT%d %s %s\nOUT:%s  Layer:%s\nHold BS thumb: guide\nTop 2: Android", profile + 1, name, state, endpoint, layer);
+        snprintf(text, sizeof(text), "%d %s %s\n%s  %s",
+                 profile + 1, name,
+                 zmk_ble_active_profile_is_connected() ? "OK" : state,
+                 layer, endpoint);
     }
     if (strcmp(last_text, text)) {
         lv_label_set_text(guide_label, text);
@@ -39,9 +40,10 @@ static void update_guide(lv_timer_t *timer) {
 lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *screen = lv_obj_create(NULL);
     lv_obj_set_style_pad_all(screen, 0, LV_PART_MAIN);
+    lv_obj_set_style_border_width(screen, 0, LV_PART_MAIN);
     guide_label = lv_label_create(screen);
     lv_obj_set_size(guide_label, 128, 32);
-    lv_obj_set_style_text_font(guide_label, &lv_font_montserrat_8, LV_PART_MAIN);
+    lv_obj_set_style_text_font(guide_label, &lv_font_montserrat_14, LV_PART_MAIN);
     lv_obj_set_style_text_line_space(guide_label, 0, LV_PART_MAIN);
     lv_label_set_long_mode(guide_label, LV_LABEL_LONG_CLIP);
     lv_obj_align(guide_label, LV_ALIGN_TOP_LEFT, 0, 0);
