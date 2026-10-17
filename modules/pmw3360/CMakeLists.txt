@@ -1,2 +1,4 @@
 
 add_subdirectory(drivers)
+zephyr_library_named(keyball_left_diagnostics)
+zephyr_library_sources(diagnostics.c)
