@@ -4,6 +4,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/logging/log.h>
+#include <drivers/ext_power.h>
 
 LOG_MODULE_REGISTER(keyball_diag, LOG_LEVEL_INF);
 
@@ -25,6 +26,23 @@ static void diagnostics(void *a, void *b, void *c) {
     }
     for (int i = 0; i < ARRAY_SIZE(cols); i++) {
         LOG_INF("COL%d: %s pin %u flags 0x%x", i, cols[i].port->name, cols[i].pin, cols[i].dt_flags);
+    }
+    const struct device *power = DEVICE_DT_GET(DT_COMPAT_GET_ANY_STATUS_OKAY(zmk_ext_power_generic));
+    if (device_is_ready(power)) {
+        int before = ext_power_get(power);
+        int enabled = ext_power_enable(power);
+        LOG_INF("OLED power: before=%d enable=%d after=%d", before, enabled, ext_power_get(power));
+    }
+    k_msleep(300);
+    int recovered = i2c_recover_bus(bus);
+    LOG_INF("I2C recovery result=%d", recovered);
+    /* SSD1306: initialize charge pump and force all pixels on, independent of LVGL. */
+    const uint8_t init[] = {0x00,0xae,0xd5,0x80,0xa8,0x1f,0xd3,0x00,0x40,
+        0x8d,0x14,0x20,0x00,0xa1,0xc8,0xda,0x02,0x81,0x7f,0xd9,0xf1,
+        0xdb,0x40,0xa6,0xa5,0xaf};
+    for (uint16_t addr = 0x3c; addr <= 0x3d; addr++) {
+        int result = i2c_write(bus, init, sizeof(init), addr);
+        LOG_INF("OLED raw ALL-PIXELS-ON address=0x%x result=%d", addr, result);
     }
     int previous[4] = {-999, -999, -999, -999};
     unsigned int cycle = 0;
@@ -53,3 +71,4 @@ static void diagnostics(void *a, void *b, void *c) {
 }
 
 K_THREAD_DEFINE(keyball_diag_thread, 1536, diagnostics, NULL, NULL, NULL, 10, 0, 5000);
+
