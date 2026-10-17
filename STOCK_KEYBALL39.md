@@ -1,6 +1,6 @@
 # Yowkees Keyball39 with nice!nano v2 and the original PMW3360
 
-Configuration: right central, left peripheral, no display, no TRRS cable.
+Configuration: right central, left peripheral, SSD1306 128x32 OLED, no TRRS cable.
 This branch adapts the parent configuration for the original wired Keyball39
 PCB. The parent's PMW3610 configuration is not appropriate for this hardware.
 
@@ -12,7 +12,7 @@ PCB. The parent's PMW3610 configuration is not appropriate for this hardware.
 - PMW3360 MISO: Pro Micro 14 / P1.11.
 - PMW3360 CS: Pro Micro 10 / P0.09.
 - No MOTION wire: use polling every 8000 microseconds.
-- The display and I2C controller are disabled.
+- SSD1306 128x32 OLED at I2C address 0x3c; SDA P0.17, SCL P0.20.
 
 Original sensor schematic:
 https://github.com/Yowkees/keyball/blob/main/keyball46/ball_design_data/Trackball_circuit.pdf
