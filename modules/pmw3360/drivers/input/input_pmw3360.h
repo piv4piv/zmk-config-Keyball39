@@ -102,6 +102,7 @@ struct pmw3360_config {
     int8_t angle_tune;
     bool lift_height_3mm;
     uint32_t polling_interval;
+    bool swap_xy;
     bool invert_x;
     bool invert_y;
 };

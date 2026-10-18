@@ -57,6 +57,7 @@
         /* Stock PMW3360 board: four-wire SPI, no wired MOTION pin. */
         polling-interval = <8000>;
         cpi = <500>;
+        swap-xy;
     };
 };
 

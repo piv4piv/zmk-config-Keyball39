@@ -43,3 +43,6 @@ properties:
     type: boolean
     description:
       "If true, invert the Y axis."
+  swap-xy:
+    type: boolean
+    description: Exchange X and Y before applying per-axis inversion.
