@@ -22,11 +22,13 @@ static void update_guide(lv_timer_t *timer) {
                         zmk_ble_active_profile_is_open() ? "PAIR" : "WAIT";
     char endpoint[ZMK_ENDPOINT_STR_LEN] = {0};
     zmk_endpoint_instance_to_str(zmk_endpoints_selected(), endpoint, sizeof(endpoint));
+    /* Profile numbers above are 1-based; do not expose the endpoint's 0-based suffix. */
+    endpoint[strcspn(endpoint, ":")] = '\0';
     char text[180];
     if (layer_id == 7) {
-        snprintf(text, sizeof(text), "1PC 2AND 3-5\nMID:1USB 2BT");
+        snprintf(text, sizeof(text), "1 PC  2 Android\n3/4/5: Other\nMID:1USB 2BLE");
     } else {
-        snprintf(text, sizeof(text), "%d %s %s\n%s  %s",
+        snprintf(text, sizeof(text), "%d %s %s\n%s  OUT:%s\nHold BS: guide",
                  profile + 1, name,
                  zmk_ble_active_profile_is_connected() ? "OK" : state,
                  layer, endpoint);
@@ -43,8 +45,9 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_set_style_border_width(screen, 0, LV_PART_MAIN);
     guide_label = lv_label_create(screen);
     lv_obj_set_size(guide_label, 128, 32);
-    lv_obj_set_style_text_font(guide_label, &lv_font_montserrat_14, LV_PART_MAIN);
-    lv_obj_set_style_text_line_space(guide_label, 0, LV_PART_MAIN);
+    lv_obj_set_style_text_font(guide_label, &lv_font_montserrat_10, LV_PART_MAIN);
+    /* Montserrat 10 has an 11px line height: 3*11 - 2*1 = 31px. */
+    lv_obj_set_style_text_line_space(guide_label, -1, LV_PART_MAIN);
     lv_label_set_long_mode(guide_label, LV_LABEL_LONG_CLIP);
     lv_obj_align(guide_label, LV_ALIGN_TOP_LEFT, 0, 0);
     last_text[0] = 0;
